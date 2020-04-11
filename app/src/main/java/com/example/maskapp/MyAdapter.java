@@ -86,7 +86,7 @@ public class MyAdapter extends BaseAdapter {
             public void onClick(View view) {
                 /* 지도로 이동하기 전, 북마크 기능과 지도이동 여부를 물어주는 대화상자를 생성 */
 
-
+/* 테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용테스트용 */
 
                 Intent intent = new Intent(context.getApplicationContext(), GMap.class);
                 intent.putExtra("lat", MaskVO.getlat(position));
