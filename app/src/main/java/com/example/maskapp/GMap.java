@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -26,10 +27,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 
 public class GMap extends FragmentActivity implements OnMapReadyCallback {
-    Double lat, lng;
+    Double lat, lng, latitude, longitude;
     GoogleMap GMap;
-    DBHelper dbHelper;
-    SQLiteDatabase sqLiteDb;
+    GpsTracker gpsTracker;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,6 +43,11 @@ public class GMap extends FragmentActivity implements OnMapReadyCallback {
         lat = intent.getExtras().getDouble("lat");
         lng = intent.getExtras().getDouble("lng");
 
+        gpsTracker = new GpsTracker(this);
+
+        latitude = gpsTracker.getLatitude();
+        longitude = gpsTracker.getLongitude();
+
 
     }
 
@@ -52,52 +57,71 @@ public class GMap extends FragmentActivity implements OnMapReadyCallback {
         GMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         LatLng latLng = new LatLng(lat, lng);
-        GMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
+        GMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
 
-        /* 이름(name), 남은수량(remain_stat), 주소(addr), 입고시간(stock_at), 위도(lat), 경도(lng) */
-        dbHelper = new DBHelper(this);
-        sqLiteDb = dbHelper.getReadableDatabase();
-        Cursor cursor = sqLiteDb.rawQuery("SELECT * FROM MaskTBL;", null);
-        cursor.moveToFirst();
+        LatLng myLatLng = new LatLng(latitude, longitude);
+        GMap.addMarker(new MarkerOptions().position(myLatLng)
+                        .title("현재 위치"));
 
-        String name;
-        String remain_stat;
-        /*String addr;
-        String stock_at;*/
-        Double lat;
-        Double lng;
+        for(int i=0; i<MaskVO.name.size(); i++){
+            LatLng markLatLng = new LatLng(MaskVO.getlat(i), MaskVO.getlng(i));
+            if(MaskVO.getremain(i).equals("100개 이상")){
+                if(lat.equals(MaskVO.getlat(i))) {        // 목록에서 클릭한 판매처인 경우
+                    GMap.addMarker(new MarkerOptions().position(markLatLng)
+                            .title(MaskVO.getName(i))
+                            .snippet("남은 수량 : " + MaskVO.getremain(i))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))).showInfoWindow();
+                }else{  // 목록에서 클릭한 판매처가 아닌경우
+                    GMap.addMarker(new MarkerOptions().position(markLatLng)
+                            .title(MaskVO.getName(i))
+                            .snippet("남은 수량 : " + MaskVO.getremain(i))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                }
 
-        while (cursor.moveToNext()){
-            name = cursor.getString(0);
-            remain_stat = cursor.getString(1);
-            /*addr = cursor.getString(2);
-            stock_at = cursor.getString(3);*/
-            lat = cursor.getDouble(4);
-            lng = cursor.getDouble(5);
 
-            LatLng markLatLng = new LatLng(lat, lng);
-            if(remain_stat.equals("100개 이상")){
-                GMap.addMarker(new MarkerOptions().position(markLatLng)
-                        .title(name)
-                        .snippet("남은 수량 : " + remain_stat)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-            }else if(remain_stat.equals("30개 이상 ~ 100개 미만")){
-                GMap.addMarker(new MarkerOptions().position(markLatLng)
-                        .title(name)
-                        .snippet("남은 수량 : " + remain_stat)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-            }else if(remain_stat.equals("2개 이상 ~ 30개 미만")){
-                GMap.addMarker(new MarkerOptions().position(markLatLng)
-                        .title(name)
-                        .snippet("남은 수량 : " + remain_stat)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+            }else if(MaskVO.getremain(i).equals("30개 이상 ~ 100개 미만")){
+                if(lat.equals(MaskVO.getlat(i))) {        // 목록에서 클릭한 판매처인 경우
+                    GMap.addMarker(new MarkerOptions().position(markLatLng)
+                            .title(MaskVO.getName(i))
+                            .snippet("남은 수량 : " + MaskVO.getremain(i))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))).showInfoWindow();
+                }else{  // 목록에서 클릭한 판매처가 아닌경우
+                    GMap.addMarker(new MarkerOptions().position(markLatLng)
+                            .title(MaskVO.getName(i))
+                            .snippet("남은 수량 : " + MaskVO.getremain(i))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                }
+
+
+            }else if(MaskVO.getremain(i).equals("2개 이상 ~ 30개 미만")){
+                if(lat.equals(MaskVO.getlat(i))) {        // 목록에서 클릭한 판매처인 경우
+                    GMap.addMarker(new MarkerOptions().position(markLatLng)
+                            .title(MaskVO.getName(i))
+                            .snippet("남은 수량 : " + MaskVO.getremain(i))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))).showInfoWindow();
+                }else{  // 목록에서 클릭한 판매처가 아닌경우
+                    GMap.addMarker(new MarkerOptions().position(markLatLng)
+                            .title(MaskVO.getName(i))
+                            .snippet("남은 수량 : " + MaskVO.getremain(i))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                }
+
+
             }else{      /* 판매완료, 판매중지, 알수없음 */
-                GMap.addMarker(new MarkerOptions().position(markLatLng)
-                        .title(name)
-                        .snippet("남은 수량 : " + remain_stat)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+                if(lat.equals(MaskVO.getlat(i))) {        // 목록에서 클릭한 판매처인 경우
+                    GMap.addMarker(new MarkerOptions().position(markLatLng)
+                            .title(MaskVO.getName(i))
+                            .snippet("남은 수량 : " + MaskVO.getremain(i))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))).showInfoWindow();
+                }else{  // 목록에서 클릭한 판매처가 아닌경우
+                    GMap.addMarker(new MarkerOptions().position(markLatLng)
+                            .title(MaskVO.getName(i))
+                            .snippet("남은 수량 : " + MaskVO.getremain(i))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+                }
             }
-
         }
     }
+
+
 }

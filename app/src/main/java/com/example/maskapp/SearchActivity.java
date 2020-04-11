@@ -1,8 +1,6 @@
 package com.example.maskapp;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,9 +37,6 @@ public class SearchActivity extends AppCompatActivity {
     Double mLatitude, mLongitude;
     FloatingActionButton floatingActionButton;
 
-    DBHelper dbHelper;
-    SQLiteDatabase sqLiteDb;
-
     ArrayList<Double> distanceSort = new ArrayList<Double>();   // sort용 배열
     ArrayList<MaskVO> p = new ArrayList<>();               // MaskVO에 자료들을 넣기 위한 배열
     ArrayList<String> addr = new ArrayList<String>();           // 주소
@@ -53,7 +48,7 @@ public class SearchActivity extends AppCompatActivity {
     ArrayList<String> remain_stat = new ArrayList<String>();    // 재고 상태(100개이상=plenty, 30~99개=some, 2~29개=few, 1개=empty, 판매중지=break;)
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected synchronized void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
@@ -61,24 +56,13 @@ public class SearchActivity extends AppCompatActivity {
         customListView = findViewById(R.id.customListView);
         floatingActionButton = findViewById(R.id.floatingActionButton);
 
-//        dbHelper = new DBHelper(this);
-//        sqLiteDb = dbHelper.getWritableDatabase();
-//
-//        dbHelper.onUpgrade(sqLiteDb, 1, 2);   //onUpgrade()메소드 호출. groupTBL테이블이 있으면 삭제 후, 2버전으로 생성.
-
         setList();
 
-//        for (int i=0; i<name.size(); i++){
-//            sqLiteDb.execSQL("INSERT INTO MaskTBL VALUES ('"
-//                    + name.get(i) + "', '"
-//                    + remain_stat.get(i) + "', '"
-//                    + addr.get(i) + "', '"
-//                    + stock_at.get(i) + "', '"
-//                    + lat.get(i) + "', '"
-//                    + lng.get(i) + "');");
-//        }
-//        sqLiteDb.close();   //DB를 닫는다.
-
+        try {
+            wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         final Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_refresh);
         /* 새로고침 버튼 */
@@ -184,6 +168,8 @@ public class SearchActivity extends AppCompatActivity {
                         distance.add(dd);
                     }
 
+                    endWait();
+
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -230,9 +216,8 @@ public class SearchActivity extends AppCompatActivity {
 
         /* 리스트뷰에 어댑터 등록 */
         customListView.setAdapter(myAdapter);
+
     }
-
-
 
     /* 거리 계산 */
     public double getDistance(double lat1, double lng1, double lat2, double lng2) {
@@ -252,7 +237,7 @@ public class SearchActivity extends AppCompatActivity {
         return distance;
     }
 
-    private synchronized void gogo(){
+    private synchronized void endWait(){
         notify();
     }
 

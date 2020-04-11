@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     Button btnSearch, btnRefresh;
     GpsTracker gpsTracker;
     Double latitude, longitude;
-    DBHelper dbHelper;
 
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSION_REQUEST_CODE = 100;
@@ -46,12 +45,6 @@ public class MainActivity extends AppCompatActivity {
         btnSearch = findViewById(R.id.btnSearch);
         btnRefresh = findViewById(R.id.btnRefresh);
 
-
-        //myDBHelper 인스턴스를 생성.(myDBHelper클래스의 myDBHelper생성자가 실행되어 gruoupDB 파일이 생성된다)
-        dbHelper = new DBHelper(this);
-
-
-
         if(!checkLocationServicesStatus()){
             showDialogForLocationServiceSetting();
         }else{
@@ -59,14 +52,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        /* 내 위치정보 조회 기능 */
-        gpsTracker = new GpsTracker(MainActivity.this);
-
-        latitude = gpsTracker.getLatitude();
-        longitude = gpsTracker.getLongitude();
-
-        String address = getCurrentAddress(latitude, longitude);
-        gpsText.setText(address);
+        setBtnRefresh();
 
 
         /* 검색 버튼 클릭 이벤트 */
@@ -81,6 +67,28 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        /* 새로고침 버튼 클릭 이벤트 */
+        btnRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setBtnRefresh();
+            }
+        });
+
+
+    }
+
+
+    /* 내 주소 새로고침 기능 */
+    public void setBtnRefresh(){
+        /* 내 위치정보 조회 기능 */
+        gpsTracker = new GpsTracker(MainActivity.this);
+
+        latitude = gpsTracker.getLatitude();
+        longitude = gpsTracker.getLongitude();
+
+        String address = getCurrentAddress(latitude, longitude);
+        gpsText.setText(address);
     }
 
 
