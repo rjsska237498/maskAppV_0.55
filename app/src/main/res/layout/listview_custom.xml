@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <TextView
+                android:id="@+id/nameText"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
+                android:text="판매처 이름"
+                android:textSize="24dp"
+                android:textColor="#000000"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:id="@+id/remainText"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="(재고상태)"
+                android:textSize="14dp"
+                android:layout_toRightOf="@+id/nameText"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="bottom"/>
+
+            <TextView
+                android:id="@+id/distanceText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="거리"
+                android:textSize="16dp"
+                android:textColor="#FF0000"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentRight="true"/>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/addressText"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:text="판매처 주소 입력 부분"
+                android:layout_marginLeft="5dp"
+                android:textSize="13dp"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:id="@+id/stockText"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:text="(공적마스크) 입고시간 입력 부분"
+                android:layout_marginLeft="5dp"
+                android:textSize="14dp"
+                android:gravity="center_vertical"/>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
